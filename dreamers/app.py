@@ -47,3 +47,4 @@ def generate_avatar():
 if __name__ == '__main__':
     app.run()
 
+
