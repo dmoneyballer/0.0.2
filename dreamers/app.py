@@ -36,15 +36,16 @@ def generate_avatar():
     # prompts = [base_prompt, second_prompt, third_prompt]
     neg_prompt = "low res, ugly, bad hands, too many digits, bad teeth, blurry, blurred background"
     image = base(prompt=gpt3_prompt, negative_prompt=neg_prompt).images[0]
-    image.save('avatar.png')
+    image.save('./static/avatar.png')
+
     # for i, prompt in enumerate(prompts):
         # image = base(prompt=prompt, negative_prompt=neg_prompt).images[0]
         # Assuming the image object has a save method, otherwise convert it to PIL image and save
         # image.save(f'{i}_img.png')
-    
-    return f'Avatar generated for {name} with the description: {description}'
-
+    return f'Avatars generated! <a href="/static/avatar.png">View first image</a>'
+    # return f'Avatar generated for {name} with the description: {description}'
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
 if __name__ == '__main__':
     app.run()
-
-
