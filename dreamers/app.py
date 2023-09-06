@@ -19,7 +19,7 @@ def generate_avatar():
     print(name, description)
     response = openai.Completion.create(
       engine="text-davinci-002",
-      prompt=f"acting as a caricature artist describe what you would see as the looks of a sterotypical person named {name} which also embodies the ideas of {description}. the description should be only a few sentences and not include the words \"caricature\", \"stereotypical\",or \"stereotype\" ",
+      prompt=f"acting as a caricature artist describe what you would see as the looks of a sterotypical person named {name} who also embodies the ideas of \"{description}\". the description should be only a few sentences and not include the words \"caricature\", \"stereotypical\",or \"stereotype\" ",
       max_tokens=50
     )
     gpt3_prompt = response.choices[0].text.strip()
