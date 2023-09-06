@@ -8,6 +8,10 @@ app = Flask(__name__)
 def index():
     return render_template('form.html')
 
+@app.route('/images')
+def images():
+    return render_template('images.html')
+
 @app.route('/generate', methods=['POST'])
 def generate_avatar():
     name = request.form['name']
