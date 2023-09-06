@@ -18,15 +18,18 @@ def images():
 
 @app.route('/generate', methods=['POST'])
 def generate_avatar():
-    name = request.form['name']
-    description = request.form['description']
+    Thread(target=long_generation_task, kwargs={'name':request.form['name'],'description':request.form['description']}).start()
+    # TODO delete avatar images from static dir
+    return redirect(url_for("images"))
+
+def long_generation_task(name, description):
     print(f"name={name}, description={description}")
 
     neg_prompt = "low res, ugly, bad hands, too many digits, bad teeth, blurry, blurred background"
 
     response = openai.ChatCompletion.create(
       model="gpt-4-0613",
-      messages=[{"role":"user","content":f'acting as a caricature artist describe what you would see as the looks of a sterotypical person named "{name}" who also embodies the ideas of "{description}". the description should be a length of 70 words or less and should not include the words "caricature", "stereotypical",or "stereotype"'}],
+      messages=[{"role":"user","content":f'acting as a caricature artist describe what you would see as the looks of a sterotypical person named "{name}" who also embodies the ideas of "{description}". the description should only be a couple sentences, should not be longer than 70 words, and should not include the words "caricature", "stereotypical",or "stereotype"'}],
       temperature = 0.7
     )
     gpt4_response = response.choices[0].message.content.strip()
@@ -49,10 +52,6 @@ def generate_avatar():
         image = base(prompt=prompt, negative_prompt=neg_prompt).images[0]
         #Assuming the image object has a save method, otherwise convert it to PIL image and save
         image.save(f"./static/avatar{i}.png")
-
-    return redirect(url_for("images"))
-    # return f'Avatars generated! <a href="/static/avatar.png">View first image</a>'
-    # return f'Avatar generated for {name} with the description: {description}'
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
