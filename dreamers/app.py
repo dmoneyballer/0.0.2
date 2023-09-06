@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory
-from diffusers import StableDiffusionXLPipeline  # Assuming this is the right import
-import torch
+from diffusers import StableDiffusionPipeline #, StableDiffusionXLPipeline
+#import torch
 import openai
 from threading import Thread
 
@@ -59,13 +59,18 @@ def serve_static(filename):
 
 if __name__ == '__main__':
     print("Preparing StableDiffusion pipeline…")
-    base = StableDiffusionXLPipeline.from_single_file(
-        './sd_xl_base_1.0_0.9vae.safetensors',
-        torch_dtype=torch.float16,
-        variant="fp16",
+    base = StableDiffusionPipeline.from_single_file(
+        './mdjrny-v4.safetensors',
         use_safetensors=True,
     )
-    base=base.to('cuda')
+
+    # base = StableDiffusionXLPipeline.from_single_file(
+    #     './sd_xl_base_1.0_0.9vae.safetensors',
+    #     torch_dtype=torch.float16,
+    #     variant="fp16",
+    #     use_safetensors=True,
+    # )
+    # base=base.to('cuda')
 
     print("run flask app")
     app.run()
