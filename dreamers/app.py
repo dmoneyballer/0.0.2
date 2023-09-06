@@ -1,7 +1,9 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from diffusers import StableDiffusionXLPipeline  # Assuming this is the right import
 import torch
 import openai
+from threading import Thread
+
 app = Flask(__name__)
 
 global base
@@ -18,17 +20,19 @@ def images():
 def generate_avatar():
     name = request.form['name']
     description = request.form['description']
-    print(name, description)
-    response = openai.Completion.create(
-      engine="text-davinci-002",
-      prompt=f'acting as a caricature artist describe what you would see as the looks of a sterotypical person named "{name}" who also embodies the ideas of "{description}". the description should be only a few sentences and not include the words "caricature", "stereotypical",or "stereotype"',
-      max_tokens=50
-    )
-    gpt3_prompt = response.choices[0].text.strip()
-    
-    # prompts = [base_prompt, second_prompt, third_prompt]
+    print(f"name={name}, description={description}")
+
     neg_prompt = "low res, ugly, bad hands, too many digits, bad teeth, blurry, blurred background"
-    image = base(prompt=gpt3_prompt, negative_prompt=neg_prompt).images[0]
+
+    response = openai.ChatCompletion.create(
+      model="gpt-4-0613",
+      messages=[{"role":"user","content":f'acting as a caricature artist describe what you would see as the looks of a sterotypical person named "{name}" who also embodies the ideas of "{description}". the description should be a length of 70 words or less and should not include the words "caricature", "stereotypical",or "stereotype"'}],
+      temperature = 0.7
+    )
+    gpt4_response = response.choices[0].message.content.strip()
+    print(f"gpt4_response={gpt4_response}")
+
+    image = base(prompt=f"avatar of {name}. {gpt4_response}", negative_prompt=neg_prompt).images[0]
     image.save('./static/avatar.png')
 
     # Use the user-provided description as the prompt
@@ -36,11 +40,12 @@ def generate_avatar():
         f"avatar {description}",
         f"avatar {description}, animated, happy, young, anime",
         f"avatar {description}, ugly, funny, farty, ascii art",
-        f'profile avatar in the style of "avatar: the last Airbender". the image should be for a user named "{name}" and should embody the essence of "{description}"',
-        f'3d, style of funko pop toy, caricature, and should embody the essence of "{description}"'
+        f'profile avatar in the style of "Avatar: the Last Airbender". the image should be for a user named "{name}" and should embody the essence of "{description}"',
+        f'3d, style of funko pop toy, caricature, named "{name}" and should embody the essence of "{description}" '
                 ]
 
-    for i, prompt in prompts:
+    for i, prompt in enumerate(prompts):
+        print(f"prompt={prompt}")
         image = base(prompt=prompt, negative_prompt=neg_prompt).images[0]
         #Assuming the image object has a save method, otherwise convert it to PIL image and save
         image.save(f"./static/avatar{i}.png")
@@ -54,13 +59,14 @@ def serve_static(filename):
     return send_from_directory('static', filename)
 
 if __name__ == '__main__':
-    # Prepare your pipeline
+    print("Preparing StableDiffusion pipeline…")
     base = StableDiffusionXLPipeline.from_single_file(
         './sd_xl_base_1.0_0.9vae.safetensors',
         torch_dtype=torch.float16,
         variant="fp16",
-        use_safetensors=True
+        use_safetensors=True,
     )
-    base.to('cuda')
+    base=base.to('cuda')
 
+    print("run flask app")
     app.run()
