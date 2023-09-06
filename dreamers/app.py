@@ -42,7 +42,8 @@ def generate_avatar():
         # image = base(prompt=prompt, negative_prompt=neg_prompt).images[0]
         # Assuming the image object has a save method, otherwise convert it to PIL image and save
         # image.save(f'{i}_img.png')
-    return f'Avatars generated! <a href="/static/avatar.png">View first image</a>'
+    return render_template('images.html')
+    # return f'Avatars generated! <a href="/static/avatar.png">View first image</a>'
     # return f'Avatar generated for {name} with the description: {description}'
 @app.route('/static/<path:filename>')
 def serve_static(filename):
