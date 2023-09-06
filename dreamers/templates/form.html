@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Avatar Generator</title>
+  <style>
+    /* Center the content of the main container */
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Add some styling to the form */
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form action="/generate" method="post">
+      <label for="name">Enter your name:</label>
+      <input type="text" id="name" name="name"><br><br>
+      <label for="description">Enter description:</label>
+      <input type="text" id="description" name="description"><br><br>
+      <button type="submit">Generate Avatar</button>
+    </form>
+  </div>
+</body>
+</html>
+
