@@ -35,15 +35,15 @@ def long_generation_task(name, description):
     gpt4_response = response.choices[0].message.content.strip()
     print(f"gpt4_response={gpt4_response}")
 
-    image = base(prompt=f"avatar of {name}. {gpt4_response}", negative_prompt=neg_prompt).images[0]
+    image = base(prompt='profile image for "{name}". {gpt4_response}', negative_prompt=neg_prompt).images[0]
     image.save('./static/avatar.png')
 
     # Use the user-provided description as the prompt
     prompts = [
-        f"avatar {description}",
-        f"avatar {description}, animated, happy, young, anime",
-        f"avatar {description}, ugly, funny, farty, ascii art",
-        f'profile avatar in the style of "Avatar: the Last Airbender". the image should be for a user named "{name}" and should embody the essence of "{description}"',
+        f"profile image, {description}",
+        f"profile image, {description}, animated, happy, young, anime",
+        f"profile image, {description}, ugly, funny, farty, ascii art",
+        f'profile image in the style of "Avatar: the Last Airbender". the image should be for a user named "{name}" and should embody the essence of "{description}"',
         f'3d, style of funko pop toy, caricature, named "{name}" and should embody the essence of "{description}" '
                 ]
 
